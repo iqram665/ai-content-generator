@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>AI Content Generator</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  </head>
+  <body class="bg-light">
+    <div class="container py-5">
+      <div class="row g-4">
+        <div class="col-lg-8">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h1 class="card-title mb-4">AI Content Generator</h1>
+
+              {% if status %}
+              <div class="alert alert-info">{{ status }}</div>
+              {% endif %}
+
+              <form method="post">
+                <div class="mb-3">
+                  <label for="title" class="form-label">Title</label>
+                  <input type="text" class="form-control" id="title" name="title" value="{{ title }}" placeholder="Enter a title for the article" required>
+                </div>
+                <div class="mb-3">
+                  <label for="description" class="form-label">Description</label>
+                  <textarea class="form-control" id="description" name="description" rows="2" placeholder="Add a short description (optional)">{{ description }}</textarea>
+                </div>
+                <div class="mb-3">
+                  <label for="prompt" class="form-label">Topic or prompt</label>
+                  <input type="text" class="form-control" id="prompt" name="prompt" value="{{ prompt }}" placeholder="Enter a topic for content generation" required>
+                </div>
+                <div class="mb-3">
+                  <label class="form-label">Language</label>
+                  <div class="btn-group" role="group" aria-label="Language selection">
+                    <input type="radio" class="btn-check" name="language" id="english" value="english" autocomplete="off" {% if language != 'bengali' %}checked{% endif %}>
+                    <label class="btn btn-outline-primary" for="english">English</label>
+
+                    <input type="radio" class="btn-check" name="language" id="bengali" value="bengali" autocomplete="off" {% if language == 'bengali' %}checked{% endif %}>
+                    <label class="btn btn-outline-primary" for="bengali">বাংলা</label>
+                  </div>
+                </div>
+                <button type="submit" class="btn btn-primary">Generate Content</button>
+              </form>
+
+              {% if result %}
+              <div class="mt-4">
+                <h2 class="h5">Generated Content</h2>
+                <div class="p-3 bg-white border rounded" style="white-space: pre-wrap;">{{ result }}</div>
+              </div>
+              {% endif %}
+
+              <p class="mt-4 text-muted">Powered by OpenAI. Set your API key in the environment before running.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-lg-4">
+          <div class="card shadow-sm">
+            <div class="card-body">
+              <h2 class="h5 mb-3">Saved Results</h2>
+              {% if saved %}
+              <div class="list-group">
+                {% for item in saved[:8] %}
+                <div class="list-group-item">
+                  <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                      <h3 class="h6 mb-1">{{ item.title }}</h3>
+                      <p class="mb-1 text-muted small">{{ item.created_at }} • {{ item.language|capitalize }}</p>
+                      <p class="mb-0">{{ item.description or item.prompt }}</p>
+                    </div>
+                  </div>
+                </div>
+                {% endfor %}
+              </div>
+              {% else %}
+              <p class="text-muted mb-0">No saved content yet. Generate one to save it automatically.</p>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
+
+# in app.py
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0")
